@@ -10,11 +10,21 @@ export class BadgeService {
     private badgeRepository: Repository<Badge>,
   ) {}
 
-  findAll(): Promise<Badge[]> {
-    return this.badgeRepository.find();
+  async findAll(page: number = 1, limit: number = 10, name?: string): Promise<Badge[]> {
+    let query = this.badgeRepository.createQueryBuilder('badge');
+
+    if (name) {
+      query = query.where('badge.name LIKE :name', { name: `%${name}%` });
+    }
+
+    return query
+      .skip((page - 1) * limit)
+      .take(limit)
+      .getMany();
   }
 
   findBySlug(slug: string): Promise<Badge> {
     return this.badgeRepository.findOne({ where: { slug } });
   }
 }
+

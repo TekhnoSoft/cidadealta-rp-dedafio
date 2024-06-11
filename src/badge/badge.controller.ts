@@ -1,4 +1,4 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { BadgeService } from './badge.service';
 import { Badge } from './badge.entity';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -11,8 +11,12 @@ export class BadgeController {
   @Get()
   @ApiOperation({ summary: 'Listar todos os emblemas registrados' })
   @ApiResponse({ status: 200, description: 'Emblemas retornados com sucesso', type: Badge, isArray: true })
-  findAll(): Promise<Badge[]> {
-    return this.badgeService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('name') name?: string,
+  ): Promise<Badge[]> {
+    return this.badgeService.findAll(page, limit, name);
   }
 
   @Get(':slug')
